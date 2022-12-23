@@ -117,6 +117,7 @@ public final class MinecraftMania extends JavaPlugin implements Game
         getServer().getPluginManager().registerEvents(new OnProjectileHit(), this);
         getServer().getPluginManager().registerEvents(new OnHit(), this);
         getServer().getPluginManager().registerEvents(new OnCraft(), this);
+        getServer().getPluginManager().registerEvents(new OnCollison(), this);
     }
 
     @Override

@@ -211,12 +211,12 @@ public class Spleef implements Game
         MinecraftMania.getInstance().setGameMode(GameMode.Hub);
         for(EventPlayer eventPlayer : alivePlayers)
         {
-            eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
+            eventPlayer.getPlayer().teleport(Bukkit.getWorld("flat").getSpawnLocation());
             eventPlayer.getPlayer().getInventory().clear();
         }
         for(EventPlayer eventPlayer : deadPlayers)
         {
-            eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
+            eventPlayer.getPlayer().teleport(Bukkit.getWorld("flat").getSpawnLocation());
             eventPlayer.getPlayer().getInventory().clear();
         }
     }

@@ -20,6 +20,7 @@ public class OnHit implements Listener
             if(MinecraftMania.getInstance().getGameMode() == GameMode.SpleefFight||MinecraftMania.getInstance().getGameMode() == GameMode.Spleef)
             {
                 damaged.damage(0);
+                damaged.knockback(0,0,0);
             }
         }
     }
