@@ -4,18 +4,25 @@ import org.bukkit.entity.Player;
 
 public class EventPlayer
 {
-    private final Player player;
+    private Player player;
     private int coins;
+    private boolean online;
 
     public EventPlayer(Player player)
     {
         this.player = player;
         coins = 0;
+        online = true;
     }
 
     public Player getPlayer()
     {
         return player;
+    }
+
+    public void setPlayer(Player player)
+    {
+        this.player = player;
     }
 
     public int getCoins()
@@ -36,5 +43,15 @@ public class EventPlayer
     public void resetCoins()
     {
         coins = 0;
+    }
+
+    public boolean isOnline()
+    {
+        return online;
+    }
+
+    public void setOnline(boolean online)
+    {
+        this.online = online;
     }
 }

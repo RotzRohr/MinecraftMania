@@ -2,6 +2,7 @@ package minecraftmania.minecraftmania.listener;
 
 import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.board.FastBoard;
+import minecraftmania.minecraftmania.event.EventPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

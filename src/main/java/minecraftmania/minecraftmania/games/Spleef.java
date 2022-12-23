@@ -4,6 +4,7 @@ import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.board.FastBoard;
 import minecraftmania.minecraftmania.event.EventPlayer;
 import minecraftmania.minecraftmania.handler.TeamHandler;
+import minecraftmania.minecraftmania.listener.OnBreak;
 import minecraftmania.minecraftmania.team.Team;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -217,5 +218,6 @@ public class Spleef implements Game
             eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
             eventPlayer.getPlayer().getInventory().clear();
         }
+        OnBreak.getInstance().replaceBrokenSnowBlocks();
     }
 }
