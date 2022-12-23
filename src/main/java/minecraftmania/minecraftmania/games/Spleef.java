@@ -201,6 +201,7 @@ public class Spleef implements Game
 
     public void onDisable()
     {
+        OnBreak.getInstance().replaceBrokenSnowBlocks();
         BukkitScheduler scheduler = Bukkit.getScheduler();
         if(taskId1 != -1)
         {
@@ -218,6 +219,5 @@ public class Spleef implements Game
             eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
             eventPlayer.getPlayer().getInventory().clear();
         }
-        OnBreak.getInstance().replaceBrokenSnowBlocks();
     }
 }
