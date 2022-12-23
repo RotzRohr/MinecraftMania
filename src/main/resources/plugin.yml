@@ -1,0 +1,13 @@
+name: MinecraftMania
+version: '${project.version}'
+main: minecraftmania.minecraftmania.MinecraftMania
+api-version: 1.19
+authors: [ LinusHuck, melvinkelvin ]
+description: This is a plugin
+commands:
+  team:
+    description: Sends a greeting to the player
+  spleef:
+    description: Sends a greeting to the player
+  rcg:
+    description: generates eventplayers
