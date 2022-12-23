@@ -13,10 +13,10 @@ public class SpleefCommand implements CommandExecutor
         switch (args[0])
         {
             case "start":
-                Spleef.getInstance().startGame();
+                Spleef.getInstance().onEnable();
                 break;
             case "stop":
-                Spleef.getInstance().endGame();
+                Spleef.getInstance().onDisable();
                 break;
         }
         return false;

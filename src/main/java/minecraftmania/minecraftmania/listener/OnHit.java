@@ -3,27 +3,23 @@ package minecraftmania.minecraftmania.listener;
 import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.games.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class OnHit implements Listener
 {
     @EventHandler
-    public void onHit(ProjectileHitEvent event) {
-        Entity projectile = event.getEntity();
-        if (projectile.getType() == EntityType.SNOWBALL && MinecraftMania.getInstance().getGameMode() == GameMode.SpleefFight) {
-            Block hitBlock = event.getHitBlock();
-            if (hitBlock != null) {
-                if(hitBlock.getType() == Material.SNOW_BLOCK)
-                {
-                    hitBlock.setType(Material.AIR);
-                }
-            } else {
-                // Snowball hit an entity
+    public void onHit(EntityDamageByEntityEvent event)
+    {
+        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player)
+        {
+            Player damager = (Player) event.getDamager();
+            Player damaged = (Player) event.getEntity();
+            if(MinecraftMania.getInstance().getGameMode() == GameMode.SpleefFight||MinecraftMania.getInstance().getGameMode() == GameMode.Spleef)
+            {
+                damaged.damage(0);
             }
         }
     }

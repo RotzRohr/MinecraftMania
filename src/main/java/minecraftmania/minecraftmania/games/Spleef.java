@@ -4,14 +4,14 @@ import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.board.FastBoard;
 import minecraftmania.minecraftmania.event.EventPlayer;
 import minecraftmania.minecraftmania.handler.TeamHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import minecraftmania.minecraftmania.team.Team;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ public class Spleef implements Game
     {
         alivePlayers.remove(player);
         deadPlayers.add(player);
+        player.getPlayer().setGameMode(org.bukkit.GameMode.SPECTATOR);
 
         for(EventPlayer alivePlayer : alivePlayers)
         {
@@ -82,27 +83,31 @@ public class Spleef implements Game
 
             Bukkit.broadcastMessage(color + "Team " + team + " has won Round "+spleefGameNumber);
 
-            endGame();
+            onDisable();
         }
     }
 
-    public void startGame()
+    public void onEnable()
     {
+
+        Location location = Bukkit.getWorld("Spleef").getSpawnLocation();
+        location.setX(28);
+        location.setY(41);
+        location.setZ(25);
         alivePlayers.clear();
         deadPlayers.clear();
         spleefGameNumber++;
         World world = Bukkit.getWorld("Spleef");
-        for(EventPlayer eventPlayer : MinecraftMania.getInstance().getPlayerList())
+        for(Team t : TeamHandler.getInstance().getTeams())
         {
-            eventPlayer.getPlayer().teleport(world.getSpawnLocation());
-            alivePlayers.add(eventPlayer);
-            eventPlayer.getPlayer().getInventory().clear();
-            PlayerInventory inventory = eventPlayer.getPlayer().getInventory();
-            ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL, 1);
-            shovel.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-            shovel.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
-            inventory.setItem(0, shovel);
+            for(EventPlayer eventPlayer : t.getPlayers())
+            {
+                eventPlayer.getPlayer().teleport(location);
+                alivePlayers.add(eventPlayer);
+                eventPlayer.getPlayer().getInventory().clear();
+            }
         }
+
         MinecraftMania.getInstance().setGameMode(GameMode.Spleef);
         BukkitScheduler scheduler = Bukkit.getScheduler();
         taskId1 = scheduler.scheduleSyncRepeatingTask(MinecraftMania.getInstance(), new Runnable() {
@@ -137,32 +142,79 @@ public class Spleef implements Game
                 }
                 else if(phase == 2)
                 {
-                    if (time == 0)
+                    if (time <= 0)
                     {
                         scheduler.cancelTask(taskId1);
+                        taskId1 = -1;
                         MinecraftMania.getInstance().setGameMode(GameMode.SpleefFight);
-                        for (Player player : Bukkit.getOnlinePlayers())
+                        for(Team t : TeamHandler.getInstance().getTeams())
                         {
-                            player.sendTitle(ChatColor.RED + "Start", "", 0, 20, 0);
+                            for(EventPlayer eventPlayer : t.getPlayers())
+                            {
+                                eventPlayer.getPlayer().sendTitle(ChatColor.RED + "Start", "", 0, 20, 0);
+                                eventPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 99999, 0, false, false));
+                            }
                         }
                     }
-                    else
+                    else if(time >=1)
                     {
-                        for (Player player : Bukkit.getOnlinePlayers())
+                        if(time == 10)
                         {
-                            player.sendTitle(ChatColor.RED + "" + time, "", 0, 20, 0);
+                            for(Team t : TeamHandler.getInstance().getTeams())
+                            {
+                                for (EventPlayer eventPlayer : t.getPlayers())
+                                {
+                                    eventPlayer.getPlayer().teleport(Bukkit.getWorld("Spleef").getSpawnLocation());
+                                    PlayerInventory inventory = eventPlayer.getPlayer().getInventory();
+                                    ItemStack shovel = new ItemStack(Material.NETHERITE_SHOVEL, 1);
+                                    shovel.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+                                    shovel.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
+                                    inventory.setItem(0, shovel);
+                                }
+                            }
                         }
+                        for(Team t : TeamHandler.getInstance().getTeams())
+                        {
+                            for (EventPlayer eventPlayer : t.getPlayers())
+                            {
+                                eventPlayer.getPlayer().sendTitle(ChatColor.RED + "" + time, "", 0, 20, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }, 0L, 20L);
+        taskId2 = scheduler.scheduleSyncRepeatingTask(MinecraftMania.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for(EventPlayer player : alivePlayers)
+                {
+                    if(player.getPlayer().getLocation().getY()<=10)
+                    {
+                        player.getPlayer().setHealth(0);
                     }
                 }
             }
         }, 0L, 20L);
 }
 
-    public void endGame()
+    public void onDisable()
     {
-        MinecraftMania.getInstance().setGameMode(GameMode.Hub);
-        for(EventPlayer eventPlayer : MinecraftMania.getInstance().getPlayerList())
+        BukkitScheduler scheduler = Bukkit.getScheduler();
+        if(taskId1 != -1)
         {
+            scheduler.cancelTask(taskId1);
+        }
+        scheduler.cancelTask(taskId2);
+        MinecraftMania.getInstance().setGameMode(GameMode.Hub);
+        for(EventPlayer eventPlayer : alivePlayers)
+        {
+            eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
+            eventPlayer.getPlayer().getInventory().clear();
+        }
+        for(EventPlayer eventPlayer : deadPlayers)
+        {
+            eventPlayer.getPlayer().teleport(Bukkit.getWorld("Hub").getSpawnLocation());
             eventPlayer.getPlayer().getInventory().clear();
         }
     }
