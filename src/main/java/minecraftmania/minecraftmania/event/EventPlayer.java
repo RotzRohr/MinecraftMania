@@ -5,56 +5,40 @@ import org.bukkit.entity.Player;
 public class EventPlayer
 {
     private Player player;
-    private int coins;
+    private int points;
     private int premissionLevel;
     private boolean online;
 
     public EventPlayer(Player player)
     {
         this.player = player;
-        coins = 0;
-        online = true;
+        points = 0;
         premissionLevel = 0;
-    }
-
-    public int getPremissionLevel()
-    {
-        return premissionLevel;
-    }
-
-    public void setPremissionLevel(int premissionLevel)
-    {
-        this.premissionLevel = premissionLevel;
+        online = true;
     }
 
     public Player getPlayer()
     {
         return player;
     }
-
     public void setPlayer(Player player)
     {
         this.player = player;
     }
 
-    public int getCoins()
+    public int getPoints()
     {
-        return coins;
+        return points;
     }
 
-    public void setCoins(int coins)
+    public void addPoints(int points)
     {
-        this.coins = coins;
+        this.points += points;
     }
 
-    public void addCoins(int coins)
+    public void resetPoints()
     {
-        this.coins += coins;
-    }
-
-    public void resetCoins()
-    {
-        coins = 0;
+        points = 0;
     }
 
     public boolean isOnline()
@@ -65,5 +49,15 @@ public class EventPlayer
     public void setOnline(boolean online)
     {
         this.online = online;
+    }
+
+    public int getPremissionLevel()
+    {
+        return premissionLevel;
+    }
+
+    public void setPremissionLevel(int premissionLevel)
+    {
+        this.premissionLevel = premissionLevel;
     }
 }

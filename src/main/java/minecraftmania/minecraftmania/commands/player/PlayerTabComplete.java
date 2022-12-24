@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class PlayerTabComplete implements TabCompleter
 {
     private static final List<String> ACTIONS = Arrays.asList("move", "reset", "info", "setPremissionLevel");
-    private static final List<String> RESET_ACTIONS = Arrays.asList("coins");
+    private static final List<String> RESET_ACTIONS = Arrays.asList("points");
 
 
     @Override

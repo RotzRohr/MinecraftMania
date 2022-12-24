@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class TeamTabCompleter implements TabCompleter {
     private static final List<String> ACTIONS = Arrays.asList("add", "remove", "setup", "list", "reset");
-    private static final List<String> RESET_OPTIONS = Arrays.asList("coins", "players");
+    private static final List<String> RESET_OPTIONS = Arrays.asList("points", "players");
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
@@ -33,6 +33,7 @@ public class TeamTabCompleter implements TabCompleter {
             List<String> teamColors = Arrays.stream(TeamColor.values())
                     .map(Enum::name)
                     .collect(Collectors.toList());
+            teamColors.add("all");
             return StringUtil.copyPartialMatches(args[1], teamColors, new ArrayList<>());
         }
         else if (args.length == 3)

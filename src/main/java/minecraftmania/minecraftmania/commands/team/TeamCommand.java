@@ -1,5 +1,9 @@
 package minecraftmania.minecraftmania.commands.team;
 
+import minecraftmania.minecraftmania.MinecraftMania;
+import minecraftmania.minecraftmania.event.EventPlayer;
+import minecraftmania.minecraftmania.handler.TeamHandler;
+import minecraftmania.minecraftmania.team.Team;
 import minecraftmania.minecraftmania.team.TeamColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,13 +20,10 @@ public class TeamCommand implements CommandExecutor {
         String action = args[0];
         if (action.equalsIgnoreCase("add"))
         {
-            if( args.length > 2 ) {
+            if( args.length > 3 ) {
                 return false;
             }
-            TeamColor teamColor = TeamColor.valueOf(args[1]);
-            String playerName = args[2];
-            // Add the player to the team
-            Bukkit.broadcastMessage("Adding player " + playerName + " to team " + teamColor);
+            addPlayerToTeam(args[2], args[1]);
         }
         else if (action.equalsIgnoreCase("remove"))
         {
@@ -36,30 +37,64 @@ public class TeamCommand implements CommandExecutor {
         }
         else if (action.equalsIgnoreCase("setup"))
         {
-            TeamColor teamColor = TeamColor.valueOf(args[1]);
-            // Set up the team
-            Bukkit.broadcastMessage("Setting up team " + teamColor);
-        } else if (action.equalsIgnoreCase("list")) {
+            for(int i = 2; i < args.length; i++)
+            {
+                addPlayerToTeam(args[i], args[1]);
+            }
+        }
+        else if (action.equalsIgnoreCase("list"))
+        {
             TeamColor teamColor = TeamColor.valueOf(args[1]);
             if(teamColor == null)
             {
-                //list all teams
+                sender.sendMessage(TeamHandler.getInstance().ListAllTeams());
             }
             else
             {
-                //list all players in team teamColor
+                sender.sendMessage(TeamHandler.getInstance().ListTeam(teamColor));
             }
             Bukkit.broadcastMessage("Listing players on team " + teamColor);
         } else if (action.equalsIgnoreCase("reset")) {
             // Reset the specified aspect of the specified team
             TeamColor teamColor = TeamColor.valueOf(args[1]);
             String aspect = args[2];
-            // Reset the aspect of the team
-            Bukkit.broadcastMessage("Resetting " + aspect + " of team " + teamColor);
+
+            if(args[1] == "all")
+            {
+                switch (aspect)
+                {
+                    case "players" :
+                        TeamHandler.getInstance().clearTeams();
+                        break;
+                    case "points" :
+                        TeamHandler.getInstance().clearPoints();
+                        break;
+                }
+            }
+            else
+            {
+                switch (aspect)
+                {
+                    case "players" :
+                        TeamHandler.getInstance().clearTeam(teamColor);
+                        break;
+                    case "points" :
+                        TeamHandler.getInstance().clearPoints(teamColor);
+                        break;
+                }
+            }
         } else {
             // Invalid action provided
             return false;
         }
         return true;
+    }
+
+    public void addPlayerToTeam(String name, String color)
+    {
+        TeamColor teamColor = TeamColor.valueOf(color);
+        String playerName = name;
+        EventPlayer eventPlayer = MinecraftMania.getInstance().getEventPlayer(Bukkit.getPlayer(playerName).getUniqueId());
+        TeamHandler.getInstance().addPlayerToTeam(eventPlayer, teamColor);
     }
 }

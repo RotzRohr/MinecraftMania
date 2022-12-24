@@ -27,10 +27,12 @@ public final class MinecraftMania extends JavaPlugin implements Game
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final Map<UUID, EventPlayer> playerlist = new HashMap<>();
     GameMode gameMode;
+    private TeamHandler teamHandler;
     private static MinecraftMania instance;
     @Override
     public void onEnable() {
         instance = this;
+        teamHandler = new TeamHandler();
         initializeCommands();
         initializeListeners();
         setGameMode(GameMode.Hub);
@@ -114,7 +116,7 @@ public final class MinecraftMania extends JavaPlugin implements Game
                 ChatColor.WHITE + "3: " + TeamHandler.getInstance().getTeam(2).toString(),
                 ChatColor.WHITE + "4: " + TeamHandler.getInstance().getTeam(3).toString(),
                 "    ",
-                ChatColor.WHITE + "Your Coins: " + ChatColor.RESET + "" + ChatColor.YELLOW + player.getCoins(),
+                ChatColor.WHITE + "Your Coins: " + ChatColor.RESET + "" + ChatColor.YELLOW + player.getPoints(),
                 "     ",
                 ChatColor.WHITE + "Team: " + TeamHandler.getInstance().getTeamColor(player),
                 ChatColor.WHITE + "Sponsored by " + ChatColor.RESET + "" + ChatColor.AQUA + "Kinetic Hosting"

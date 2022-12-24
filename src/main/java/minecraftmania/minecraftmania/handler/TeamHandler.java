@@ -17,10 +17,10 @@ public class TeamHandler
     {
         instance = this;
         teams = new ArrayList<>();
-        teams.add(new Team(TeamColor.Red, ChatColor.RED, "Red"));
-        teams.add(new Team(TeamColor.Blue, ChatColor.BLUE, "Blue"));
-        teams.add(new Team(TeamColor.Yellow, ChatColor.YELLOW, "Yellow"));
-        teams.add(new Team(TeamColor.Green, ChatColor.GREEN, "Green"));
+        teams.add(new Team(TeamColor.Red));
+        teams.add(new Team(TeamColor.Blue));
+        teams.add(new Team(TeamColor.Yellow));
+        teams.add(new Team(TeamColor.Green));
     }
 
     public static TeamHandler getInstance()
@@ -28,98 +28,98 @@ public class TeamHandler
         return instance;
     }
 
-    public ArrayList<Team> getTeams()
+    public Team getTeam(TeamColor teamColor)
     {
-        return teams;
+        for (Team team : teams)
+        {
+            if (team.getName().equals(teamColor.toString()))
+            {
+                return team;
+            }
+        }
+        return null;
     }
-
     public Team getTeam(int index)
     {
         return teams.get(index);
     }
 
-    public void addPlayerToTeam(TeamColor teamColor, EventPlayer player)
+    public String getTeamColor(EventPlayer p)
     {
-        if(isInTeam(player))
+        //p.getPlayer().getUniqueId()
+        for (Team team : teams)
         {
-            removePlayerFromTeam(player);
-        }
-            for (Team team : teams) {
-                if (team.getTeamColor() == teamColor) {
-                    team.addPlayer(player);
-                    return;
-                }
-            }
-    }
-
-    public void removePlayerFromTeam(EventPlayer player)
-    {
-        TeamColor teamColor = getTeamColor(player);
-        if(teamColor!=TeamColor.NoTeam)
-        {
-            for (Team team : teams) {
-                if (team.getTeamColor() == teamColor) {
-                    team.removePlayer(player);
-                    return;
-                }
-            }
-        }
-    }
-
-    public TeamColor getTeamColor(EventPlayer player)
-    {
-        for(Team team : teams)
-        {
-            if(team.hasPlayer(player))
+            if(team.isInTeam(p.getPlayer().getUniqueId()))
             {
-                return team.getTeamColor();
+                return team.getName();
             }
         }
-        return TeamColor.NoTeam;
+        return TeamColor.NoTeam.toString();
     }
 
-    public ChatColor getChatColor(EventPlayer player)
+    public void addPlayerToTeam(EventPlayer eventPlayer, TeamColor teamColor)
     {
-        for(Team team : teams)
+        getTeam(teamColor).addEventPlayer(eventPlayer);
+        eventPlayer.getPlayer().sendMessage("You have been added to team " + teamColor.name());
+    }
+
+    public void removePlayerFromTeam(EventPlayer eventPlayer, TeamColor teamColor)
+    {
+        if (getTeam(teamColor).isInTeam(eventPlayer.getPlayer().getUniqueId()))
         {
-            if(team.hasPlayer(player))
-            {
-                return team.getChatColor();
-            }
+            getTeam(teamColor).removeEventPlayer(eventPlayer);
+            eventPlayer.getPlayer().sendMessage(ChatColor.RED + "You have been removed from the " + teamColor.toString() + " team!");
         }
-        return ChatColor.WHITE;
     }
 
-    public int getTeamCoins(TeamColor teamColor)
+    public void clearTeams()
     {
-        for(Team team : teams)
+        for (Team team : teams)
         {
-            if(team.getTeamColor() == teamColor)
-            {
-                return team.getCoins();
-            }
+            team.resetTeam();
         }
-        return 0;
     }
 
-    public boolean isInTeam(EventPlayer player)
+    public void clearTeam(TeamColor teamColor)
     {
-        return getTeamColor(player)!=TeamColor.NoTeam;
+        getTeam(teamColor).resetTeam();
+    }
+
+    public void clearPoints()
+    {
+        for (Team team : teams)
+        {
+            team.resetTeamPoints();
+        }
+    }
+
+    public void clearPoints(TeamColor teamColor)
+    {
+        getTeam(teamColor).resetTeamPoints();
+    }
+
+    public String ListTeam(TeamColor teamColor)
+    {
+        Team team = getTeam(teamColor);
+        String output = team.getColor() + team.getName() + ChatColor.WHITE + "\n";
+        output += team.getFormattedPlayerNames();
+        return output;
+    }
+
+    public String ListAllTeams()
+    {
+        String output = "";
+        for(Team t : teams)
+        {
+            output += ListTeam(TeamColor.valueOf(t.getName()))+"\n";
+        }
+        output = output.substring(0, output.length()-1);
+        return output;
     }
 
     public void sortTeams()
     {
         Collections.sort(teams);
     }
-
-    public String getAllTeamsToString()
-    {
-        String allTeams = "";
-        for (Team team : teams) {
-            allTeams += team.getFormattedPlayerNames() + "\n";
-        }
-        return allTeams;
-    }
-
 
 }

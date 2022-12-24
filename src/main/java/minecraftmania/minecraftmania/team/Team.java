@@ -5,82 +5,87 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Team implements Comparable
 {
-    private final ChatColor color;
-    private final String name;
-    private final ArrayList<EventPlayer> players;
-    private final TeamColor teamColor;
+    private TeamColor name;
+    private ArrayList<EventPlayer> players;
 
-    public Team(TeamColor teamColor, ChatColor color, String name)
+    public Team(TeamColor name)
     {
-        this.teamColor = teamColor;
-        this.color = color;
         this.name = name;
-        players = new ArrayList<>();
-    }
-
-    public TeamColor getTeamColor()
-    {
-        return teamColor;
-    }
-    public ChatColor getChatColor()
-    {
-        return color;
+        this.players = new ArrayList<>();
     }
 
     public String getName()
     {
-        return name;
+        return name.toString();
     }
 
-    public ArrayList<EventPlayer> getPlayers()
+    public ChatColor getColor()
     {
-        return players;
+        return ChatColor.valueOf(getName().toUpperCase());
     }
 
-    public void addPlayer(EventPlayer player)
+    public void addEventPlayer(EventPlayer eventPlayer)
     {
-        this.players.add(player);
+        players.add(eventPlayer);
     }
 
-    public void removePlayer(EventPlayer player)
+    public void removeEventPlayer(EventPlayer eventPlayer)
     {
-        this.players.remove(player);
+        players.remove(eventPlayer);
     }
 
-    public boolean hasPlayer(EventPlayer player)
+    public void resetTeam()
     {
-        return this.players.contains(player);
+        players.clear();
     }
 
-    public int getCoins()
+    public void resetTeamPoints()
     {
-        int coins = 0;
-        for(EventPlayer player : players)
+        for (EventPlayer eventPlayer : players)
         {
-            coins += player.getCoins();
+            eventPlayer.resetPoints();
         }
-        return coins;
+    }
+
+    public EventPlayer getEventPlayer(UUID uuid)
+    {
+        for (EventPlayer eventPlayer : players)
+        {
+            if (eventPlayer.getPlayer().getUniqueId().equals(uuid))
+            {
+                return eventPlayer;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInTeam(UUID uuid)
+    {
+        return getEventPlayer(uuid) != null;
+    }
+
+    public int getPoints()
+    {
+        int points = 0;
+        for (EventPlayer eventPlayer : players)
+        {
+            points += eventPlayer.getPoints();
+        }
+        return points;
     }
 
     public String getFormattedPlayerNames()
     {
-        StringBuilder playerNameBuilder = new StringBuilder();
-
-        if(this.players.size() == 0) return color + "Team:\n" + "    No players.";
-
-        for(EventPlayer player : this.players) {
-            playerNameBuilder.append("    " + player.getPlayer().getName() + "\n");
+        String playerNames = "";
+        for (EventPlayer eventPlayer : players)
+        {
+            playerNames += "    " + eventPlayer.getPlayer().getName() + "\n";
         }
-
-        return color + "Team:\n" + playerNameBuilder.toString();
-    }
-
-    @Override
-    public int compareTo(@NotNull Object o) {
-        return this.getCoins() - ((Team) o).getCoins();
+        return playerNames.substring(0, playerNames.length() - 2);
     }
 
     public String toString()
@@ -101,6 +106,12 @@ public class Team implements Comparable
                 temp+="  ";
                 break;
         }
-        return color + temp + ChatColor.YELLOW + getCoins() + ChatColor.WHITE+ " Coins";
+        return getColor() + temp + ChatColor.YELLOW + getPoints() + ChatColor.WHITE+ " Points";
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        Team team = (Team) o;
+        return team.getPoints() - getPoints();
     }
 }
