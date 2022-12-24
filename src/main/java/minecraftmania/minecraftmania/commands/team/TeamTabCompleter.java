@@ -30,12 +30,23 @@ public class TeamTabCompleter implements TabCompleter {
         else if (args.length == 2)
         {
             // Autocomplete team color
-            List<String> teamColors = Arrays.stream(TeamColor.values())
-                    .map(Enum::name)
-                    .collect(Collectors.toList());
-            if(args[0].equalsIgnoreCase("reset")||args[0].equalsIgnoreCase("list"))
-                teamColors.add("all");
-            return StringUtil.copyPartialMatches(args[1], teamColors, new ArrayList<>());
+            if(args[0].equalsIgnoreCase("remove"))
+            {
+                List<String> playerNames = new ArrayList<>();
+                for (Player player : Bukkit.getOnlinePlayers())
+                {
+                    playerNames.add(player.getName());
+                }
+                return StringUtil.copyPartialMatches(args[1], playerNames, new ArrayList<>());
+            }
+            else {
+                List<String> teamColors = Arrays.stream(TeamColor.values())
+                        .map(Enum::name)
+                        .collect(Collectors.toList());
+                if (args[0].equalsIgnoreCase("reset"))
+                    teamColors.add("all");
+                return StringUtil.copyPartialMatches(args[1], teamColors, new ArrayList<>());
+            }
         }
         else if (args.length == 3)
         {

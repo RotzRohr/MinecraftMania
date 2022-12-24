@@ -85,7 +85,9 @@ public class Team implements Comparable
         {
             playerNames += "    " + eventPlayer.getPlayer().getName() + "\n";
         }
-        return playerNames.substring(0, playerNames.length() - 2);
+        if(playerNames.equals(""))
+            playerNames = "    No players in this team ";
+        return playerNames.substring(0, playerNames.length() - 1);
     }
 
     public String toString()

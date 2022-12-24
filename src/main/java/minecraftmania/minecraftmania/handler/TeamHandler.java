@@ -57,8 +57,24 @@ public class TeamHandler
         return TeamColor.NoTeam.toString();
     }
 
+    public boolean isInTeam(EventPlayer p)
+    {
+        for (Team team : teams)
+        {
+            if(team.isInTeam(p.getPlayer().getUniqueId()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addPlayerToTeam(EventPlayer eventPlayer, TeamColor teamColor)
     {
+        if(isInTeam(eventPlayer))
+        {
+            removePlayerFromTeam(eventPlayer, TeamColor.valueOf(getTeamColor(eventPlayer)));
+        }
         getTeam(teamColor).addEventPlayer(eventPlayer);
         eventPlayer.getPlayer().sendMessage("You have been added to team " + teamColor.name());
     }

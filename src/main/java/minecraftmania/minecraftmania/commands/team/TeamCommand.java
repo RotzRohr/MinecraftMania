@@ -27,13 +27,14 @@ public class TeamCommand implements CommandExecutor {
         }
         else if (action.equalsIgnoreCase("remove"))
         {
-            if( args.length > 2 ) {
+            if( args.length < 1 ) {
                 return false;
             }
-            TeamColor teamColor = TeamColor.valueOf(args[1]);
-            String playerName = args[2];
-            // Remove the player from the team
-            Bukkit.broadcastMessage("Removing player " + playerName + " from team " + teamColor);
+            String playerName = args[1];
+            EventPlayer eventPlayer = MinecraftMania.getInstance().getEventPlayer(Bukkit.getPlayer(playerName).getUniqueId());
+            TeamColor teamColor = TeamColor.valueOf(TeamHandler.getInstance().getTeamColor(eventPlayer));
+
+            TeamHandler.getInstance().removePlayerFromTeam(eventPlayer, teamColor);
         }
         else if (action.equalsIgnoreCase("setup"))
         {
@@ -44,16 +45,15 @@ public class TeamCommand implements CommandExecutor {
         }
         else if (action.equalsIgnoreCase("list"))
         {
-            TeamColor teamColor = TeamColor.valueOf(args[1]);
-            if(teamColor == null)
+
+            if(args.length > 1)
             {
-                sender.sendMessage(TeamHandler.getInstance().ListAllTeams());
+                sender.sendMessage(TeamHandler.getInstance().ListTeam(TeamColor.valueOf(args[1])));
             }
             else
             {
-                sender.sendMessage(TeamHandler.getInstance().ListTeam(teamColor));
+                sender.sendMessage(TeamHandler.getInstance().ListAllTeams());
             }
-            Bukkit.broadcastMessage("Listing players on team " + teamColor);
         } else if (action.equalsIgnoreCase("reset")) {
             // Reset the specified aspect of the specified team
             TeamColor teamColor = TeamColor.valueOf(args[1]);
