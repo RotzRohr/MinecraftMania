@@ -6,6 +6,7 @@ public class EventPlayer
 {
     private Player player;
     private int coins;
+    private int premissionLevel;
     private boolean online;
 
     public EventPlayer(Player player)
@@ -13,6 +14,17 @@ public class EventPlayer
         this.player = player;
         coins = 0;
         online = true;
+        premissionLevel = 0;
+    }
+
+    public int getPremissionLevel()
+    {
+        return premissionLevel;
+    }
+
+    public void setPremissionLevel(int premissionLevel)
+    {
+        this.premissionLevel = premissionLevel;
     }
 
     public Player getPlayer()

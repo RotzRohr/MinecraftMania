@@ -1,23 +1,23 @@
 package minecraftmania.minecraftmania;
 
 import minecraftmania.minecraftmania.board.FastBoard;
-import minecraftmania.minecraftmania.commands.SpleefCommand;
-import minecraftmania.minecraftmania.commands.TeamCommand;
-import minecraftmania.minecraftmania.commands.TestCommand;
+import minecraftmania.minecraftmania.commands.HelpCommand;
+import minecraftmania.minecraftmania.commands.event.EventCommand;
+import minecraftmania.minecraftmania.commands.event.EventTabCompleter;
+import minecraftmania.minecraftmania.commands.player.PlayerCommand;
+import minecraftmania.minecraftmania.commands.player.PlayerTabComplete;
+import minecraftmania.minecraftmania.commands.team.TeamCommand;
+import minecraftmania.minecraftmania.commands.team.TeamTabCompleter;
 import minecraftmania.minecraftmania.event.EventPlayer;
 import minecraftmania.minecraftmania.games.Game;
 import minecraftmania.minecraftmania.games.GameMode;
-import minecraftmania.minecraftmania.games.Spleef;
 import minecraftmania.minecraftmania.handler.TeamHandler;
 import minecraftmania.minecraftmania.listener.*;
 import org.bukkit.ChatColor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,87 +25,63 @@ import java.util.UUID;
 public final class MinecraftMania extends JavaPlugin implements Game
 {
     private final Map<UUID, FastBoard> boards = new HashMap<>();
-    private final Map<Player, EventPlayer> playerlist = new HashMap<>();
+    private final Map<UUID, EventPlayer> playerlist = new HashMap<>();
     GameMode gameMode;
     private static MinecraftMania instance;
-    private Spleef spleef;
-    private TeamHandler teamHandler;
-    private int numberOfGames;
     @Override
     public void onEnable() {
         instance = this;
-        spleef = new Spleef();
-        teamHandler = new TeamHandler();
         initializeCommands();
         initializeListeners();
-        numberOfGames = 0;
         setGameMode(GameMode.Hub);
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
-                if(GameMode.Hub == gameMode||GameMode.Waiting == gameMode)
+                if(GameMode.Hub == gameMode)
                 {
                     updateBoard(board);
                 }
                 else if(GameMode.Spleef == gameMode)
                 {
-                    Spleef.getInstance().updateBoard(board);
+                    //Spleef.getInstance().updateBoard(board);
                 }
             }
         }, 0, 20);
     }
 
-    public int getNumberOfGames()
+    public boolean wasOnServer(UUID uuid)
     {
-        return numberOfGames;
+        return playerlist.containsKey(uuid);
     }
 
-    public void incrementNumberOfGames()
+    public void updatePlayer(Player p)
     {
-        numberOfGames++;
+        playerlist.get(p.getUniqueId()).setPlayer(p);
     }
 
-    public void addPlayer(Player player)
+    public void newPlayer(Player p)
     {
-        playerlist.put(player, new EventPlayer(player));
+        playerlist.put(p.getUniqueId(), new EventPlayer(p));
     }
 
-    public void removePlayer(Player player)
+    public EventPlayer getEventPlayer(UUID uuid)
     {
-        playerlist.remove(player);
+        return playerlist.get(uuid);
     }
 
-    public ArrayList<EventPlayer> getPlayerList()
-    {
-        return new ArrayList<>(playerlist.values());
-    }
 
-    public EventPlayer getEventPlayer(Player player)
-    {
-        return playerlist.get(player);
-    }
 
-    public Map<UUID, FastBoard> getBoards()
-    {
-        return boards;
-    }
 
-    public GameMode getGameMode()
-    {
-        return gameMode;
-    }
-
-    public void setGameMode(GameMode gameMode)
-    {
-        this.gameMode = gameMode;
-    }
 
     private void initializeCommands() {
-        @Nullable PluginCommand team = getCommand("team");
-        @Nullable PluginCommand spleef = getCommand("spleef");
-        @Nullable PluginCommand g = getCommand("rcg");
-        spleef.setExecutor(new SpleefCommand());
-        team.setExecutor(new TeamCommand());
-        g.setExecutor(new TestCommand());
+        getCommand("team").setExecutor(new TeamCommand());
+        getCommand("team").setTabCompleter(new TeamTabCompleter());
+        getCommand("event").setExecutor(new EventCommand());
+        getCommand("event").setTabCompleter(new EventTabCompleter());
+        getCommand("player").setExecutor(new PlayerCommand());
+        getCommand("player").setTabCompleter(new PlayerTabComplete());
+        getCommand("h").setExecutor(new HelpCommand());
+        getCommand("h").setTabCompleter(new HelpCommand());
+
     }
 
     private void initializeListeners() {
@@ -123,7 +99,7 @@ public final class MinecraftMania extends JavaPlugin implements Game
     @Override
     public void updateBoard(FastBoard board)
     {
-        EventPlayer player = getEventPlayer(board.getPlayer());
+        EventPlayer player = getEventPlayer(board.getPlayer().getUniqueId());
         TeamHandler.getInstance().sortTeams();
         LocalTime currentTime = LocalTime.now();
         String timeString = String.format("%02d:%02d:%02d", currentTime.getHour(), currentTime.getMinute(), currentTime.getSecond());
@@ -148,5 +124,20 @@ public final class MinecraftMania extends JavaPlugin implements Game
     public static MinecraftMania getInstance()
     {
         return instance;
+    }
+
+    public GameMode getGameMode()
+    {
+        return gameMode;
+    }
+
+    public void setGameMode(GameMode gameMode)
+    {
+        this.gameMode = gameMode;
+    }
+
+    public Map<UUID, FastBoard> getBoards()
+    {
+        return boards;
     }
 }

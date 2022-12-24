@@ -6,8 +6,29 @@ authors: [ LinusHuck, melvinkelvin ]
 description: This is a plugin
 commands:
   team:
-    description: Sends a greeting to the player
-  spleef:
-    description: Sends a greeting to the player
-  rcg:
-    description: generates eventplayers
+    description: Manage teams
+    usage: /team <add | remove | setup | list | reset> <team> [player]
+    permission: minecraftmania.team
+    permission-message: You do not have permission to use this command.
+    executor: minecraftmania.minecraftmania.commands.team.TeamCommand
+    tab-completer: minecraftmania.minecraftmania.commands.team.TeamTabCompleter
+  event:
+    description: Manage events
+    usage: /event <game> <start | stop>
+    permission: minecraftmania.team
+    permission-message: You do not have permission to use this command.
+    executor: minecraftmania.minecraftmania.commands.event.EventCommand
+    tab-completer: minecraftmania.minecraftmania.commands.event.EventTabCompleter
+  player:
+      description: Manages player
+      usage: /player <name> <move | reset | info | setPremissionLevel> <name> <value>
+      permission: minecraftmania.team
+      permission-message: You do not have permission to use this command.
+      executor: minecraftmania.minecraftmania.commands.player.PlayerCommand
+      tab-completer: minecraftmania.minecraftmania.commands.player.PlayerTabCompleter
+  h:
+    description: Displays a list of available commands and their usage.
+    usage: /h
+    aliases: [ '?', 'commands' ]
+    executor: minecraftmania.minecraftmania.commands.HelpCommand
+    tab-completer: minecraftmania.minecraftmania.commands.HelpTabCompleter

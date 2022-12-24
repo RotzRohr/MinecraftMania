@@ -3,7 +3,7 @@ import minecraftmania.minecraftmania.board.FastBoard;
 
 public interface Game
 {
-    public void updateBoard(FastBoard board);
-    public void onEnable();
-    public void onDisable();
+    void updateBoard(FastBoard board);
+    void onEnable();
+    void onDisable();
 }
