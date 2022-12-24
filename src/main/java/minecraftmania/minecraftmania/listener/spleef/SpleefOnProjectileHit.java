@@ -1,9 +1,9 @@
-package minecraftmania.minecraftmania.listener;
+package minecraftmania.minecraftmania.listener.spleef;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-public class OnProjectileHit implements Listener
+public class SpleefOnProjectileHit implements Listener
 {
     @EventHandler
     public void OnProjectileHit(ProjectileHitEvent event) {

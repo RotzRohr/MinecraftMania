@@ -1,4 +1,4 @@
-package minecraftmania.minecraftmania.listener;
+package minecraftmania.minecraftmania.listener.general;
 import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.board.FastBoard;
 import org.bukkit.ChatColor;

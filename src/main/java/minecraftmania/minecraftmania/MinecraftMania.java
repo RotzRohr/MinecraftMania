@@ -9,12 +9,14 @@ import minecraftmania.minecraftmania.commands.player.PlayerTabComplete;
 import minecraftmania.minecraftmania.commands.team.TeamCommand;
 import minecraftmania.minecraftmania.commands.team.TeamTabCompleter;
 import minecraftmania.minecraftmania.event.EventPlayer;
-import minecraftmania.minecraftmania.games.Game;
-import minecraftmania.minecraftmania.games.GameMode;
+import minecraftmania.minecraftmania.games.*;
 import minecraftmania.minecraftmania.handler.TeamHandler;
-import minecraftmania.minecraftmania.listener.*;
+import minecraftmania.minecraftmania.listener.general.OnChat;
+import minecraftmania.minecraftmania.listener.general.OnJoin;
+import minecraftmania.minecraftmania.listener.general.OnQuit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalTime;
@@ -38,64 +40,35 @@ public final class MinecraftMania extends JavaPlugin implements Game
         setGameMode(GameMode.Hub);
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
-                if(GameMode.Hub == gameMode)
+                switch (gameMode)
                 {
-                    updateBoard(board);
-                }
-                else if(GameMode.Spleef == gameMode)
-                {
-                    //Spleef.getInstance().updateBoard(board);
+                    case Hub:
+                        MinecraftMania.getInstance().updateBoard(board);
+                        break;
+                    case Spleef:
+                        Spleef.getInstance().updateBoard(board);
+                        break;
+                    case Parkour:
+                        Parkour.getInstance().updateBoard(board);
+                        break;
+                    case Dropper:
+                        Dropper.getInstance().updateBoard(board);
+                        break;
+                    case Knockout:
+                        Knockout.getInstance().updateBoard(board);
+                        break;
+                    default:
+                        MinecraftMania.getInstance().updateBoard(board);
+                        break;
+
                 }
             }
         }, 0, 20);
     }
 
-    public boolean wasOnServer(UUID uuid)
-    {
-        return playerlist.containsKey(uuid);
-    }
-
-    public void updatePlayer(Player p)
-    {
-        playerlist.get(p.getUniqueId()).setPlayer(p);
-    }
-
-    public void newPlayer(Player p)
-    {
-        playerlist.put(p.getUniqueId(), new EventPlayer(p));
-    }
-
-    public EventPlayer getEventPlayer(UUID uuid)
-    {
-        return playerlist.get(uuid);
-    }
-
-
-
-
-
-    private void initializeCommands() {
-        getCommand("team").setExecutor(new TeamCommand());
-        getCommand("team").setTabCompleter(new TeamTabCompleter());
-        getCommand("event").setExecutor(new EventCommand());
-        getCommand("event").setTabCompleter(new EventTabCompleter());
-        getCommand("player").setExecutor(new PlayerCommand());
-        getCommand("player").setTabCompleter(new PlayerTabComplete());
-        getCommand("h").setExecutor(new HelpCommand());
-        getCommand("h").setTabCompleter(new HelpCommand());
-
-    }
-
-    private void initializeListeners() {
-        getServer().getPluginManager().registerEvents(new OnJoin(), this);
-        getServer().getPluginManager().registerEvents(new OnQuit(), this);
-        getServer().getPluginManager().registerEvents(new OnChat(), this);
-        getServer().getPluginManager().registerEvents(new OnDeath(), this);
-        getServer().getPluginManager().registerEvents(new OnBreak(), this);
-        getServer().getPluginManager().registerEvents(new OnProjectileHit(), this);
-        getServer().getPluginManager().registerEvents(new OnHit(), this);
-        getServer().getPluginManager().registerEvents(new OnCraft(), this);
-        getServer().getPluginManager().registerEvents(new OnCollison(), this);
+    @Override
+    public void onDisable() {
+        disableListeners();
     }
 
     @Override
@@ -122,24 +95,59 @@ public final class MinecraftMania extends JavaPlugin implements Game
                 ChatColor.WHITE + "Sponsored by " + ChatColor.RESET + "" + ChatColor.AQUA + "Kinetic Hosting"
         );
     }
+    public void initializeCommands() {
+        getCommand("team").setExecutor(new TeamCommand());
+        getCommand("team").setTabCompleter(new TeamTabCompleter());
+        getCommand("event").setExecutor(new EventCommand());
+        getCommand("event").setTabCompleter(new EventTabCompleter());
+        getCommand("player").setExecutor(new PlayerCommand());
+        getCommand("player").setTabCompleter(new PlayerTabComplete());
+        getCommand("h").setExecutor(new HelpCommand());
+        getCommand("h").setTabCompleter(new HelpCommand());
 
+    }
+
+    public void initializeListeners() {
+        getServer().getPluginManager().registerEvents(new OnJoin(), this);
+        getServer().getPluginManager().registerEvents(new OnQuit(), this);
+        getServer().getPluginManager().registerEvents(new OnChat(), this);
+    }
+
+    public void disableListeners() {
+        HandlerList.unregisterAll(new OnJoin());
+        HandlerList.unregisterAll(new OnQuit());
+        HandlerList.unregisterAll(new OnChat());
+    }
     public static MinecraftMania getInstance()
     {
         return instance;
     }
-
+    public Map<UUID, FastBoard> getBoards()
+    {
+        return boards;
+    }
     public GameMode getGameMode()
     {
         return gameMode;
     }
-
     public void setGameMode(GameMode gameMode)
     {
         this.gameMode = gameMode;
     }
-
-    public Map<UUID, FastBoard> getBoards()
+    public boolean wasOnServer(UUID uuid)
     {
-        return boards;
+        return playerlist.containsKey(uuid);
+    }
+    public void updatePlayer(Player p)
+    {
+        playerlist.get(p.getUniqueId()).setPlayer(p);
+    }
+    public void newPlayer(Player p)
+    {
+        playerlist.put(p.getUniqueId(), new EventPlayer(p));
+    }
+    public EventPlayer getEventPlayer(UUID uuid)
+    {
+        return playerlist.get(uuid);
     }
 }

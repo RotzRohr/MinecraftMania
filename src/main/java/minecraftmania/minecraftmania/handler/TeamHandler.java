@@ -46,7 +46,6 @@ public class TeamHandler
 
     public String getTeamColor(EventPlayer p)
     {
-        //p.getPlayer().getUniqueId()
         for (Team team : teams)
         {
             if(team.isInTeam(p.getPlayer().getUniqueId()))

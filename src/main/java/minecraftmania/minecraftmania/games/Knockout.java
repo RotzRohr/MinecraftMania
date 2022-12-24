@@ -2,9 +2,9 @@ package minecraftmania.minecraftmania.games;
 
 import minecraftmania.minecraftmania.board.FastBoard;
 
-public class Dropper implements Game
+public class Knockout implements Game
 {
-    private static Dropper instance;
+    private static Knockout instance;
     @Override
     public void updateBoard(FastBoard board) {
 
@@ -31,7 +31,7 @@ public class Dropper implements Game
 
     }
 
-    public static Dropper getInstance()
+    public static Knockout getInstance()
     {
         return instance;
     }

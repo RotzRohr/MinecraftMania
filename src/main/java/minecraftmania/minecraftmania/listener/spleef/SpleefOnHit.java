@@ -1,9 +1,9 @@
-package minecraftmania.minecraftmania.listener;
+package minecraftmania.minecraftmania.listener.spleef;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class OnHit implements Listener
+public class SpleefOnHit implements Listener
 {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event)
