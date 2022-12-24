@@ -2,8 +2,6 @@ package minecraftmania.minecraftmania.listener;
 
 import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.games.GameMode;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -15,11 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnBreak implements Listener {
-    private List<Block> brokenSnowBlocks = new ArrayList<>();
+    private List<Block> brokenSnowBlocks;
     private static OnBreak instance;
 
     public OnBreak() {
         instance = this;
+        brokenSnowBlocks = new ArrayList<>();
         brokenSnowBlocks.clear();
     }
 

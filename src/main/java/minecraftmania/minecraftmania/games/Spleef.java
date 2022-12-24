@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 public class Spleef implements Game
 {
-    private ArrayList<EventPlayer> alivePlayers = new ArrayList<>();
-    private ArrayList<EventPlayer> deadPlayers = new ArrayList<>();
+    private ArrayList<EventPlayer> alivePlayers;
+    private ArrayList<EventPlayer> deadPlayers;
     private static Spleef instance;
     private int spleefGameNumber;
     private int taskId1;
@@ -29,6 +29,8 @@ public class Spleef implements Game
     public Spleef()
     {
         instance = this;
+        alivePlayers = new ArrayList<>();
+        deadPlayers = new ArrayList<>();
         spleefGameNumber = 0;
     }
 
@@ -65,6 +67,10 @@ public class Spleef implements Game
         return alivePlayers.contains(player);
     }
 
+    public ArrayList<EventPlayer> getAlivePlayers() {
+        return alivePlayers;
+    }
+
     public void playerDied(EventPlayer player)
     {
         alivePlayers.remove(player);
@@ -90,11 +96,7 @@ public class Spleef implements Game
 
     public void onEnable()
     {
-
-        Location location = Bukkit.getWorld("Spleef").getSpawnLocation();
-        location.setX(28);
-        location.setY(41);
-        location.setZ(25);
+        Location location = new Location(Bukkit.getWorld("Spleef"), 28, 41, 25);
         alivePlayers.clear();
         deadPlayers.clear();
         spleefGameNumber++;
@@ -137,7 +139,7 @@ public class Spleef implements Game
                         case 2:
                             Bukkit.broadcastMessage(ChatColor.YELLOW + "Good luck!");
                             phase = 2;
-                            time = 11;
+                            time = 6;
                             break;
                     }
                 }
@@ -159,7 +161,7 @@ public class Spleef implements Game
                     }
                     else if(time >=1)
                     {
-                        if(time == 10)
+                        if(time == 5)
                         {
                             for(Team t : TeamHandler.getInstance().getTeams())
                             {
@@ -188,11 +190,18 @@ public class Spleef implements Game
         taskId2 = scheduler.scheduleSyncRepeatingTask(MinecraftMania.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for(EventPlayer player : alivePlayers)
-                {
-                    if(player.getPlayer().getLocation().getY()<=10)
+                if(alivePlayers != null) {
+                    for (EventPlayer player : Spleef.getInstance().getAlivePlayers()) {
+                        if (player.getPlayer().getLocation().getY() <= 10) {
+                            player.getPlayer().setHealth(0);
+                        }
+                    }
+                    for(int i = 0; i < alivePlayers.size(); i++)
                     {
-                        player.getPlayer().setHealth(0);
+                        if(alivePlayers.get(i).getPlayer().getLocation().getY() <= 10)
+                        {
+                            alivePlayers.get(i).getPlayer().setHealth(0);
+                        }
                     }
                 }
             }
@@ -201,6 +210,7 @@ public class Spleef implements Game
 
     public void onDisable()
     {
+        Location location = new Location(Bukkit.getWorld("Spleef"), 28, 41, 25);
         OnBreak.getInstance().replaceBrokenSnowBlocks();
         BukkitScheduler scheduler = Bukkit.getScheduler();
         if(taskId1 != -1)
@@ -211,12 +221,12 @@ public class Spleef implements Game
         MinecraftMania.getInstance().setGameMode(GameMode.Hub);
         for(EventPlayer eventPlayer : alivePlayers)
         {
-            eventPlayer.getPlayer().teleport(Bukkit.getWorld("flat").getSpawnLocation());
+            eventPlayer.getPlayer().teleport(location);
             eventPlayer.getPlayer().getInventory().clear();
         }
         for(EventPlayer eventPlayer : deadPlayers)
         {
-            eventPlayer.getPlayer().teleport(Bukkit.getWorld("flat").getSpawnLocation());
+            eventPlayer.getPlayer().teleport(location);
             eventPlayer.getPlayer().getInventory().clear();
         }
     }
