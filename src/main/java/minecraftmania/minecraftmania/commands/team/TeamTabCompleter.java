@@ -33,7 +33,7 @@ public class TeamTabCompleter implements TabCompleter {
             List<String> teamColors = Arrays.stream(TeamColor.values())
                     .map(Enum::name)
                     .collect(Collectors.toList());
-            if(args[0].equalsIgnoreCase("reset"))
+            if(args[0].equalsIgnoreCase("reset")||args[0].equalsIgnoreCase("list"))
                 teamColors.add("all");
             return StringUtil.copyPartialMatches(args[1], teamColors, new ArrayList<>());
         }
