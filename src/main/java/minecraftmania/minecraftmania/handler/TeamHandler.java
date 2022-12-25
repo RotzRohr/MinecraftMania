@@ -28,6 +28,11 @@ public class TeamHandler
         return instance;
     }
 
+    public ArrayList<Team> getTeams()
+    {
+        return teams;
+    }
+
     public Team getTeam(TeamColor teamColor)
     {
         for (Team team : teams)
@@ -54,6 +59,18 @@ public class TeamHandler
             }
         }
         return TeamColor.NoTeam.toString();
+    }
+
+    public ChatColor getTeamChatColor(EventPlayer p)
+    {
+        for (Team team : teams)
+        {
+            if(team.isInTeam(p.getPlayer().getUniqueId()))
+            {
+                return team.getColor();
+            }
+        }
+        return ChatColor.WHITE;
     }
 
     public boolean isInTeam(EventPlayer p)

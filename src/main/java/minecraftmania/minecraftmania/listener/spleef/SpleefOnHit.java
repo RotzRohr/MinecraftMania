@@ -8,6 +8,6 @@ public class SpleefOnHit implements Listener
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event)
     {
-
+        event.setCancelled(true);
     }
 }

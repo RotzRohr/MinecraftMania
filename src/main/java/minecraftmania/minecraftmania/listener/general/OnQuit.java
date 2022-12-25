@@ -13,10 +13,9 @@ public class OnQuit implements Listener
     {
         Player player = event.getPlayer();
         FastBoard board = MinecraftMania.getInstance().getBoards().remove(player.getUniqueId());
+        MinecraftMania.getInstance().getEventPlayer(player.getUniqueId()).setOnline(false);
         if (board != null) {
             board.delete();
         }
-
-        MinecraftMania.getInstance().getEventPlayer(player.getUniqueId()).setOnline(false);
     }
 }

@@ -6,7 +6,8 @@ import org.bukkit.event.entity.EntityInteractEvent;
 public class SpleefOnCollison implements Listener
 {
     @EventHandler
-    public void onEntityInteract(EntityInteractEvent event) {
-
+    public void onEntityInteract(EntityInteractEvent event)
+    {
+        event.setCancelled(true);
     }
 }

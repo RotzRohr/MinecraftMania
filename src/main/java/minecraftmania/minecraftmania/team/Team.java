@@ -18,6 +18,11 @@ public class Team implements Comparable
         this.players = new ArrayList<>();
     }
 
+    public ArrayList<EventPlayer> getPlayers()
+    {
+        return players;
+    }
+
     public String getName()
     {
         return name.toString();

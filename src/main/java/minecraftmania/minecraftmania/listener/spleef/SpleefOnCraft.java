@@ -8,6 +8,6 @@ public class SpleefOnCraft implements Listener
     @EventHandler
     public void onCraft(CraftItemEvent event)
     {
-
+        event.setCancelled(true);
     }
 }

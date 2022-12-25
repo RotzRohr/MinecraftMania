@@ -28,19 +28,19 @@ public final class MinecraftMania extends JavaPlugin implements Game
 {
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final Map<UUID, EventPlayer> playerlist = new HashMap<>();
-    GameMode gameMode;
     private TeamHandler teamHandler;
+    private GameManager gameManager;
     private static MinecraftMania instance;
     @Override
     public void onEnable() {
         instance = this;
         teamHandler = new TeamHandler();
+        gameManager = new GameManager();
         initializeCommands();
         initializeListeners();
-        setGameMode(GameMode.Hub);
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
-                switch (gameMode)
+                switch (gameManager.getCurrentGameMode())
                 {
                     case Hub:
                         MinecraftMania.getInstance().updateBoard(board);
@@ -66,12 +66,10 @@ public final class MinecraftMania extends JavaPlugin implements Game
         }, 0, 20);
     }
 
-    @Override
     public void onDisable() {
         disableListeners();
     }
 
-    @Override
     public void updateBoard(FastBoard board)
     {
         EventPlayer player = getEventPlayer(board.getPlayer().getUniqueId());
@@ -82,14 +80,14 @@ public final class MinecraftMania extends JavaPlugin implements Game
                 "",
                 ChatColor.WHITE + "Current time: " + ChatColor.YELLOW + timeString,
                 "  ",
-                ChatColor.YELLOW + gameMode.toString(),
+                ChatColor.YELLOW + GameManager.getInstance().getCurrentGameMode().toString(),
                 "   ",
                 ChatColor.WHITE + "1: " + TeamHandler.getInstance().getTeam(0).toString(),
                 ChatColor.WHITE + "2: " + TeamHandler.getInstance().getTeam(1).toString(),
                 ChatColor.WHITE + "3: " + TeamHandler.getInstance().getTeam(2).toString(),
                 ChatColor.WHITE + "4: " + TeamHandler.getInstance().getTeam(3).toString(),
                 "    ",
-                ChatColor.WHITE + "Your Coins: " + ChatColor.RESET + "" + ChatColor.YELLOW + player.getPoints(),
+                ChatColor.WHITE + "Your Points: " + ChatColor.RESET + "" + ChatColor.YELLOW + player.getPoints(),
                 "     ",
                 ChatColor.WHITE + "Team: " + TeamHandler.getInstance().getTeamColor(player),
                 ChatColor.WHITE + "Sponsored by " + ChatColor.RESET + "" + ChatColor.AQUA + "Kinetic Hosting"
@@ -125,14 +123,6 @@ public final class MinecraftMania extends JavaPlugin implements Game
     public Map<UUID, FastBoard> getBoards()
     {
         return boards;
-    }
-    public GameMode getGameMode()
-    {
-        return gameMode;
-    }
-    public void setGameMode(GameMode gameMode)
-    {
-        this.gameMode = gameMode;
     }
     public boolean wasOnServer(UUID uuid)
     {
