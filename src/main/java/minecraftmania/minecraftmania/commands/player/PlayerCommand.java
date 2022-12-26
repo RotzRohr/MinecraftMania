@@ -1,5 +1,6 @@
 package minecraftmania.minecraftmania.commands.player;
 
+import minecraftmania.minecraftmania.MinecraftMania;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,6 +35,7 @@ public class PlayerCommand implements CommandExecutor
                 return true;
             case "setPremissionLevel":
                 Bukkit.broadcastMessage("givePremission player " + playerName);
+                MinecraftMania.getInstance().getEventPlayer(player.getUniqueId()).setPremissionLevel(Integer.parseInt(args[2]));
                 return true;
             default:
                 return false;

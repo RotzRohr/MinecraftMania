@@ -41,6 +41,11 @@ public class EventPlayer
         points = 0;
     }
 
+    public void setPoints(int points)
+    {
+        this.points = points;
+    }
+
     public boolean isOnline()
     {
         return online;

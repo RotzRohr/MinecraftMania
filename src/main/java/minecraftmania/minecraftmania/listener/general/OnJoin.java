@@ -1,6 +1,8 @@
 package minecraftmania.minecraftmania.listener.general;
 import minecraftmania.minecraftmania.MinecraftMania;
 import minecraftmania.minecraftmania.board.FastBoard;
+import minecraftmania.minecraftmania.handler.TeamHandler;
+import minecraftmania.minecraftmania.team.TeamColor;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +22,22 @@ public class OnJoin implements Listener
         {
             p.sendMessage("Welcome back!");
             MinecraftMania.getInstance().updatePlayer(p);
-            MinecraftMania.getInstance().getEventPlayer(p.getUniqueId()).setOnline(false);
+            MinecraftMania.getInstance().getEventPlayer(p.getUniqueId()).setOnline(true);
+        }
+        else if(MinecraftMania.getInstance().containsPlayer(p.getUniqueId()))
+        {
+            MinecraftMania.data d = null;
+            for(MinecraftMania.data da : MinecraftMania.getInstance().getDatalist())
+            {
+                if(da.getUUID().equals(p.getUniqueId()))
+                {
+                    d = da;
+                }
+            }
+            MinecraftMania.getInstance().newPlayer(p);
+            MinecraftMania.getInstance().getEventPlayer(p.getUniqueId()).setPoints(d.getPoints());
+            MinecraftMania.getInstance().getEventPlayer(p.getUniqueId()).setPremissionLevel(d.getPermissionLevel());
+            TeamHandler.getInstance().addPlayerToTeam(MinecraftMania.getInstance().getEventPlayer(p.getUniqueId()), TeamColor.valueOf(d.getTeam()));
         }
         else
         {

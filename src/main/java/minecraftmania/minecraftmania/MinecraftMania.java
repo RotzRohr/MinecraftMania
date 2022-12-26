@@ -11,15 +11,21 @@ import minecraftmania.minecraftmania.commands.team.TeamTabCompleter;
 import minecraftmania.minecraftmania.event.EventPlayer;
 import minecraftmania.minecraftmania.games.*;
 import minecraftmania.minecraftmania.handler.TeamHandler;
+import minecraftmania.minecraftmania.listener.general.OnBreak;
 import minecraftmania.minecraftmania.listener.general.OnChat;
+import minecraftmania.minecraftmania.listener.spleef.SpleefOnChat;
 import minecraftmania.minecraftmania.listener.general.OnJoin;
 import minecraftmania.minecraftmania.listener.general.OnQuit;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,9 +34,16 @@ public final class MinecraftMania extends JavaPlugin implements Game
 {
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final Map<UUID, EventPlayer> playerlist = new HashMap<>();
+    private ArrayList<data> datalist = new ArrayList<>();
     private TeamHandler teamHandler;
     private GameManager gameManager;
     private static MinecraftMania instance;
+    private Listener l1 = new OnChat();
+    private Listener l2 = new OnBreak();
+
+    public ArrayList<data> getDatalist() {
+        return datalist;
+    }
     @Override
     public void onEnable() {
         instance = this;
@@ -38,6 +51,7 @@ public final class MinecraftMania extends JavaPlugin implements Game
         gameManager = new GameManager();
         initializeCommands();
         initializeListeners();
+        load();
         getServer().getScheduler().runTaskTimer(this, () -> {
             for (FastBoard board : this.boards.values()) {
                 switch (gameManager.getCurrentGameMode())
@@ -68,6 +82,58 @@ public final class MinecraftMania extends JavaPlugin implements Game
 
     public void onDisable() {
         disableListeners();
+        GameManager.getInstance().shutdown();
+        save();
+    }
+    public void save()
+    {
+        String writeString = "";
+        for(EventPlayer player : playerlist.values()) {
+            writeString += player.getPlayer().getUniqueId() + "," + TeamHandler.getInstance().getTeamColor(player) + "," + player.getPoints() + "," + player.getPremissionLevel() + "\n";
+        }
+
+        try {
+            FileWriter myWriter = new FileWriter("filename.txt");
+            myWriter.write(writeString);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public boolean containsPlayer(UUID uuid)
+    {
+        for(data d : datalist)
+        {
+            if(d.uuid.equals(uuid))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void load()
+    {
+        try
+        {
+            BufferedReader objReader = new BufferedReader(new FileReader("filename.txt"));
+            String strCurrentLine;
+            while ((strCurrentLine = objReader.readLine()) != null)
+            {
+                String[] data = strCurrentLine.split(",");
+                datalist.add(new data(UUID.fromString(data[0]), data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3])));
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void updateBoard(FastBoard board)
@@ -102,19 +168,28 @@ public final class MinecraftMania extends JavaPlugin implements Game
         getCommand("player").setTabCompleter(new PlayerTabComplete());
         getCommand("h").setExecutor(new HelpCommand());
         getCommand("h").setTabCompleter(new HelpCommand());
-
+        enableTempListeners();
     }
 
     public void initializeListeners() {
         getServer().getPluginManager().registerEvents(new OnJoin(), this);
         getServer().getPluginManager().registerEvents(new OnQuit(), this);
-        getServer().getPluginManager().registerEvents(new OnChat(), this);
+    }
+
+    public void enableTempListeners() {
+        getServer().getPluginManager().registerEvents(l1, this);
+        getServer().getPluginManager().registerEvents(l2, this);
+    }
+
+    public void disableTempListeners() {
+        HandlerList.unregisterAll(l1);
+        HandlerList.unregisterAll(l2);
     }
 
     public void disableListeners() {
         HandlerList.unregisterAll(new OnJoin());
         HandlerList.unregisterAll(new OnQuit());
-        HandlerList.unregisterAll(new OnChat());
+        HandlerList.unregisterAll(new SpleefOnChat());
     }
     public static MinecraftMania getInstance()
     {
@@ -139,5 +214,41 @@ public final class MinecraftMania extends JavaPlugin implements Game
     public EventPlayer getEventPlayer(UUID uuid)
     {
         return playerlist.get(uuid);
+    }
+
+    public class data
+    {
+        UUID uuid;
+        String team;
+        int points;
+        int permissionLevel;
+
+        public data(UUID uuid, String team, int points, int permissionLevel)
+        {
+            this.uuid = uuid;
+            this.team = team;
+            this.points = points;
+            this.permissionLevel = permissionLevel;
+        }
+
+        public UUID getUUID()
+        {
+            return uuid;
+        }
+
+        public String getTeam()
+        {
+            return team;
+        }
+
+        public int getPoints()
+        {
+            return points;
+        }
+
+        public int getPermissionLevel()
+        {
+            return permissionLevel;
+        }
     }
 }

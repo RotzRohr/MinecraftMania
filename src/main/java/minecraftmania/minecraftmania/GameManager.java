@@ -43,6 +43,7 @@ public class GameManager
             case Knockout:
                 break;
             case Hub:
+                MinecraftMania.getInstance().disableTempListeners();
                 break;
         }
     }
@@ -80,6 +81,7 @@ public class GameManager
             case Knockout:
                 break;
             case Hub:
+                MinecraftMania.getInstance().enableTempListeners();
                 break;
         }
     }
